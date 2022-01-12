@@ -398,23 +398,28 @@ Use linux or wsl for the following steps.
 
 Install packages:
 ```shell
-sudo apt-get install qrencode
+sudo apt-get install qrencode imagemagick
 ```
 
 
-In order to safely store the created backup file of the secret private key, we can split the generated (ascii armored!) file into 2kB files
+In order to safely store the created backup file of the secret private key, we can split the generated (ascii armored!) file into 1.5kB files
 ```shell
-split -b 2000 -d backup.key part
+split -b 1500 -d backup.key part
 ```
-Here we split backup.key into multiple files with a max of 2000 bytes. They are numbered like: `part00 part01...`
+Here we split backup.key into multiple files with a max of 1500 bytes, so that we can encode qrcodes with a error correction level of Q. They are numbered like: `part00 part01...`
 
 Next run the following bash script to encode every part as a qr image
 ```shell
 for file in part?? 
 do
-	qrencode -l M -r $file -o "$file".png
+	qrencode -l Q -r $file -o $file.png
 	rm $file	
 done
+```
+
+Now we'll create one image that contains all parts with their filelabel below. Ready for printing
+```shell
+montage -label '%f' *.png -geometry '1x1<' -tile 2x3 backup.png
 ```
 
 Now your can print all the qrcodes on paper in the correct order!
@@ -439,6 +444,11 @@ cat part_* > restored_key.gpg
 rm part_*
 
 ```
+Alternatively you can write all them to file directly with `zbarcam`:
+```shell
+zbarcam --raw > cam.input
+```
+You can scan multiple qrcodes in the correct order and the input will be together in cam.input
 
 Now you can import the restored secret key like exaplained in [Restore](#restore)
 
@@ -453,4 +463,4 @@ Now you can import the restored secret key like exaplained in [Restore](#restore
 - [Paul Fawkesley - Prepare Offline Machine](https://paul.fawkesley.com/gpg-for-humans-preparing-an-offline-machine/)
 - [Jens Erat on a good gnupg setup](https://security.stackexchange.com/questions/31594/what-is-a-good-general-purpose-gnupg-key-setup)
 - [Jens Erat on how many gpg keys to make]( https://security.stackexchange.com/questions/29851/how-many-openpgp-keys-should-i-make)
-  
+- https://gist.github.com/GrantTrebbin/0c6aadc7ecebe3107d08
