@@ -24,6 +24,7 @@ Mainly intendet for my future self and enriched by many online resources
 - [Handling Private Keys](#handling-private-keys)
 - [Backup](#backup)
   - [Paper Backup](#paper-backup)
+- [Signing git Commits](#signing-git-commits)
 - [References and Sources](#references-and-sources)
 
 # GPG in General
@@ -452,6 +453,27 @@ You can scan multiple qrcodes in the correct order and the input will be togethe
 
 Now you can import the restored secret key like exaplained in [Restore](#restore)
 
+# Signing git Commits
+Tell git about the key used to sign commits (copy fingerprint via `gpg -K`):
+```shell
+git config --global user.signingkey FINGERPRINT
+```
+`--global` can be ommited if the change should only affect the local git repo.
+
+In order to push the commit, your public has to be registered to your account of your git host of choice.  
+Usually under Settings -> GPG Keys. Make sure that the associated email in the signing key is also registered in your account!
+
+Sign all commits per default:
+```shell
+git config --global commit.gpgsign true
+```
+
+Alternatively you can manually sign a commit with the `-S` flag when commiting:
+```shell
+git commit -S -m "MESSAGE"
+```
+
+
 # References and Sources
 - [bfrg's gpg guide](https://github.com/bfrg/gpg-guide)
 - [samuelexferri's gpg guide](https://github.com/samuelexferri/gpg-guide/blob/master/gpg-guide.md)
@@ -464,3 +486,4 @@ Now you can import the restored secret key like exaplained in [Restore](#restore
 - [Jens Erat on a good gnupg setup](https://security.stackexchange.com/questions/31594/what-is-a-good-general-purpose-gnupg-key-setup)
 - [Jens Erat on how many gpg keys to make]( https://security.stackexchange.com/questions/29851/how-many-openpgp-keys-should-i-make)
 - https://gist.github.com/GrantTrebbin/0c6aadc7ecebe3107d08
+- [Githubs guide to sign commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/telling-git-about-your-signing-key)
